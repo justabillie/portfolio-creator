@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Pencil, Trash2, Award, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, Award, ExternalLink, FileText } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -14,6 +14,7 @@ import {
 import { Field, Input } from "@/components/form-field";
 import { Btn } from "@/components/button";
 import { PageHeader } from "@/components/page-header";
+import { FileUpload } from "@/components/file-upload";
 import { springSoft } from "@/lib/motion";
 
 type Cert = {
@@ -25,10 +26,19 @@ type Cert = {
   imageUrl: string | null;
 };
 
-const emptyForm = { title: "", issuer: "", issueDate: "", credentialUrl: "", imageUrl: "" };
+const emptyForm = {
+  title: "",
+  issuer: "",
+  issueDate: "",
+  credentialUrl: "",
+  imageUrl: "",
+};
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export default function CertificatesPage() {
@@ -47,10 +57,14 @@ export default function CertificatesPage() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   function openCreate() {
-    setEditingId(null); setForm(emptyForm); setModalOpen(true);
+    setEditingId(null);
+    setForm(emptyForm);
+    setModalOpen(true);
   }
 
   function openEdit(x: Cert) {
@@ -75,7 +89,9 @@ export default function CertificatesPage() {
       credentialUrl: form.credentialUrl || null,
       imageUrl: form.imageUrl || null,
     };
-    const url = editingId ? `/api/certificates/${editingId}` : "/api/certificates";
+    const url = editingId
+      ? `/api/certificates/${editingId}`
+      : "/api/certificates";
     const method = editingId ? "PUT" : "POST";
     const res = await fetch(url, {
       method,
@@ -84,7 +100,10 @@ export default function CertificatesPage() {
     });
     const data = await res.json();
     setSaving(false);
-    if (!res.ok) { toast.error(data.error ?? "Failed to save"); return; }
+    if (!res.ok) {
+      toast.error(data.error ?? "Failed to save");
+      return;
+    }
     toast.success(editingId ? "Certificate updated" : "Certificate added");
     setModalOpen(false);
     load();
@@ -93,7 +112,10 @@ export default function CertificatesPage() {
   async function remove(id: string, title: string) {
     if (!confirm(`Delete "${title}"?`)) return;
     const res = await fetch(`/api/certificates/${id}`, { method: "DELETE" });
-    if (!res.ok) { toast.error("Failed to delete"); return; }
+    if (!res.ok) {
+      toast.error("Failed to delete");
+      return;
+    }
     setItems((p) => p.filter((x) => x.id !== id));
     toast.success("Certificate deleted");
   }
@@ -120,66 +142,98 @@ export default function CertificatesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <AnimatePresence mode="popLayout">
-            {items.map((x, i) => (
-              <motion.div
-                key={x.id}
-                layout
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ ...springSoft, delay: i * 0.03 }}
-                className="group rounded-2xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:shadow-md transition-all"
-              >
-                {x.imageUrl && (
-                  <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={x.imageUrl}
-                      alt={x.title}
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                    />
-                  </div>
-                )}
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold truncate">{x.title}</h3>
-                      <p className="text-sm text-neutral-600 mt-0.5">
-                        {x.issuer}
-                        {x.issueDate && ` · ${formatDate(x.issueDate)}`}
-                      </p>
+            {items.map((x, i) => {
+              const isPdf = x.imageUrl?.toLowerCase().endsWith(".pdf");
+              return (
+                <motion.div
+                  key={x.id}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ ...springSoft, delay: i * 0.03 }}
+                  className="group rounded-2xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:shadow-md transition-all"
+                >
+                  {x.imageUrl && !isPdf && (
+                    <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={x.imageUrl}
+                        alt={x.title}
+                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                      />
                     </div>
-                    <div className="flex gap-1 shrink-0">
-                      <button
-                        onClick={() => openEdit(x)}
-                        className="p-1.5 rounded-md text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
-                        aria-label="Edit"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => remove(x.id, x.title)}
-                        className="p-1.5 rounded-md text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  {x.credentialUrl && (
-                    <a
-                      href={x.credentialUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-xs mt-3 text-neutral-700 hover:text-neutral-900 font-medium"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      View credential
-                    </a>
                   )}
-                </div>
-              </motion.div>
-            ))}
+                  {x.imageUrl && isPdf && (
+                    <div className="aspect-[4/3] bg-neutral-100 border-b border-neutral-100 overflow-hidden relative">
+                      <iframe
+                        src={`${x.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
+                        className="w-full h-full pointer-events-none"
+                        title={x.title}
+                      />
+                      <a
+                        href={x.imageUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="absolute inset-0"
+                        aria-label={`View ${x.title}`}
+                      />
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold truncate">{x.title}</h3>
+                        <p className="text-sm text-neutral-600 mt-0.5">
+                          {x.issuer}
+                          {x.issueDate && ` · ${formatDate(x.issueDate)}`}
+                        </p>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <button
+                          onClick={() => openEdit(x)}
+                          className="p-1.5 rounded-md text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                          aria-label="Edit"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => remove(x.id, x.title)}
+                          className="p-1.5 rounded-md text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          aria-label="Delete"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 mt-3 text-xs">
+                      {x.credentialUrl && (
+                        <a
+                          href={x.credentialUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-neutral-700 hover:text-neutral-900 font-medium"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          Verify
+                        </a>
+                      )}
+                      {isPdf && x.imageUrl && (
+                        <a
+                          href={x.imageUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-neutral-700 hover:text-neutral-900 font-medium"
+                        >
+                          <FileText className="h-3 w-3" />
+                          Open PDF
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
       )}
@@ -187,16 +241,19 @@ export default function CertificatesPage() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit certificate" : "New certificate"}</DialogTitle>
+            <DialogTitle>
+              {editingId ? "Edit certificate" : "New certificate"}
+            </DialogTitle>
             <DialogDescription>
-              Add the certificate details. Image uploads come next.
+              Add the certificate details and attach a photo or PDF.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={submit} className="space-y-4 mt-2">
             <Field label="Title" required>
               <Input
-                required autoFocus
+                required
+                autoFocus
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="AWS Certified Cloud Practitioner"
@@ -223,23 +280,35 @@ export default function CertificatesPage() {
               <Field label="Credential URL">
                 <Input
                   value={form.credentialUrl}
-                  onChange={(e) => setForm({ ...form, credentialUrl: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, credentialUrl: e.target.value })
+                  }
                   placeholder="https://…"
                 />
               </Field>
             </div>
 
-            <Field label="Image URL" hint="Or upload once we add file support.">
-              <Input
-                value={form.imageUrl}
-                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                placeholder="https://…"
-              />
-            </Field>
+            <FileUpload
+              label="Certificate file"
+              value={form.imageUrl || null}
+              onChange={(url) => setForm({ ...form, imageUrl: url ?? "" })}
+              folder="certificates"
+              accept="image/*,application/pdf"
+              aspectClass="aspect-[4/3] max-w-[280px]"
+              hint="JPG, PNG, WebP, or PDF · max 5 MB"
+            />
 
             <div className="flex justify-end gap-2 pt-2">
-              <Btn type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Btn>
-              <Btn type="submit" loading={saving}>{editingId ? "Save changes" : "Add certificate"}</Btn>
+              <Btn
+                type="button"
+                variant="ghost"
+                onClick={() => setModalOpen(false)}
+              >
+                Cancel
+              </Btn>
+              <Btn type="submit" loading={saving}>
+                {editingId ? "Save changes" : "Add certificate"}
+              </Btn>
             </div>
           </form>
         </DialogContent>
@@ -261,7 +330,12 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <p className="text-sm text-neutral-500 mt-1 max-w-xs mx-auto">
         Add credentials, licenses, and course completions.
       </p>
-      <div className="mt-5"><Btn onClick={onAdd}><Plus className="h-4 w-4" />Add certificate</Btn></div>
+      <div className="mt-5">
+        <Btn onClick={onAdd}>
+          <Plus className="h-4 w-4" />
+          Add certificate
+        </Btn>
+      </div>
     </motion.div>
   );
 }
@@ -270,7 +344,10 @@ function SkeletonGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {[1, 2].map((i) => (
-        <div key={i} className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <div
+          key={i}
+          className="rounded-2xl border border-neutral-200 bg-white p-5"
+        >
           <div className="h-4 w-2/3 bg-neutral-100 rounded animate-pulse mb-2" />
           <div className="h-3 w-1/2 bg-neutral-100 rounded animate-pulse" />
         </div>

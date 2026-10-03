@@ -5,13 +5,12 @@ import { getSessionPayload } from "@/lib/session";
 
 const projectSchema = z.object({
   title: z.string().min(1).max(200),
+  role: z.string().max(100).optional().nullable(),
   description: z.string().max(2000).optional().nullable(),
   techStack: z.array(z.string()).default([]),
   imageUrl: z.string().url().optional().nullable().or(z.literal("")),
   demoUrl: z.string().url().optional().nullable().or(z.literal("")),
   repoUrl: z.string().url().optional().nullable().or(z.literal("")),
-  startDate: z.string().optional().nullable(),
-  endDate: z.string().optional().nullable(),
 });
 
 export async function GET() {
@@ -44,13 +43,12 @@ export async function POST(request: Request) {
       data: {
         userId: session.userId,
         title: d.title,
+        role: d.role ?? null,
         description: d.description ?? null,
         techStack: d.techStack,
         imageUrl: d.imageUrl || null,
         demoUrl: d.demoUrl || null,
         repoUrl: d.repoUrl || null,
-        startDate: d.startDate ? new Date(d.startDate) : null,
-        endDate: d.endDate ? new Date(d.endDate) : null,
       },
     });
 

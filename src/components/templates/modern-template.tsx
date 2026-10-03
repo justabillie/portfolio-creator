@@ -9,6 +9,7 @@ import {
   Download,
   ExternalLink,
   Code2,
+  Users,
 } from "lucide-react";
 import type { PortfolioData } from "@/lib/portfolio";
 import { Reveal } from "@/components/reveal";
@@ -193,13 +194,12 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                       setDetail({
                         type: "project",
                         title: p.title,
+                        role: p.role,
                         description: p.description,
                         techStack: p.techStack,
                         imageUrl: p.imageUrl,
                         demoUrl: p.demoUrl,
                         repoUrl: p.repoUrl,
-                        startDate: p.startDate,
-                        endDate: p.endDate,
                       })
                     }
                     className="text-left"
@@ -223,13 +223,12 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                         setDetail({
                           type: "project",
                           title: p.title,
+                          role: p.role,
                           description: p.description,
                           techStack: p.techStack,
                           imageUrl: p.imageUrl,
                           demoUrl: p.demoUrl,
                           repoUrl: p.repoUrl,
-                          startDate: p.startDate,
-                          endDate: p.endDate,
                         })
                       }
                       className="text-left"
@@ -237,6 +236,12 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                       <h3 className="font-bold text-lg group-hover:text-indigo-300 transition-colors">
                         {p.title}
                       </h3>
+                      {p.role && (
+                        <p className="text-xs text-indigo-300/70 mt-1 inline-flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {p.role}
+                        </p>
+                      )}
                       {p.description && (
                         <p className="text-sm text-neutral-400 mt-2 line-clamp-3 leading-relaxed">
                           {p.description}
@@ -262,7 +267,6 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                       </div>
                     )}
 
-                    {/* Links row */}
                     {(p.demoUrl || p.repoUrl) && (
                       <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-white/10 text-sm">
                         {p.demoUrl && (
@@ -376,70 +380,81 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
           <Reveal>
             <ModernHeading title="Certificates" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {certificates.map((c) => (
-                <div
-                  key={c.id}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-hidden hover:border-white/20 hover:-translate-y-0.5 transition-all"
-                >
-                  <button
-                    onClick={() =>
-                      setDetail({
-                        type: "certificate",
-                        title: c.title,
-                        issuer: c.issuer,
-                        issueDate: c.issueDate,
-                        credentialUrl: c.credentialUrl,
-                        imageUrl: c.imageUrl,
-                      })
-                    }
-                    className="text-left w-full"
+              {certificates.map((c) => {
+                const isPdf = c.imageUrl?.toLowerCase().endsWith(".pdf");
+                return (
+                  <div
+                    key={c.id}
+                    className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-hidden hover:border-white/20 hover:-translate-y-0.5 transition-all"
                   >
-                    {c.imageUrl && !c.imageUrl.toLowerCase().endsWith(".pdf") && (
-                      <div className="aspect-[4/3] bg-neutral-900 overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={c.imageUrl}
-                          alt={c.title}
-                          className="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-500"
-                        />
+                    <button
+                      onClick={() =>
+                        setDetail({
+                          type: "certificate",
+                          title: c.title,
+                          issuer: c.issuer,
+                          issueDate: c.issueDate,
+                          credentialUrl: c.credentialUrl,
+                          imageUrl: c.imageUrl,
+                        })
+                      }
+                      className="text-left w-full"
+                    >
+                      {c.imageUrl && !isPdf && (
+                        <div className="aspect-[4/3] bg-neutral-900 overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={c.imageUrl}
+                            alt={c.title}
+                            className="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-500"
+                          />
+                        </div>
+                      )}
+                      {c.imageUrl && isPdf && (
+                        <div className="aspect-[4/3] bg-neutral-900 overflow-hidden relative">
+                          <iframe
+                            src={`${c.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
+                            className="w-full h-full pointer-events-none"
+                            title={c.title}
+                          />
+                        </div>
+                      )}
+                      <div className="p-5">
+                        <h3 className="font-bold">{c.title}</h3>
+                        <p className="text-sm text-neutral-400 mt-1">
+                          {c.issuer}
+                          {c.issueDate && ` · ${fmtMonth(c.issueDate)}`}
+                        </p>
+                      </div>
+                    </button>
+                    {(c.credentialUrl || (isPdf && c.imageUrl)) && (
+                      <div className="px-5 pb-5 flex gap-3 text-xs font-medium">
+                        {c.credentialUrl && (
+                          <a
+                            href={c.credentialUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-indigo-300 hover:text-indigo-200"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            Verify
+                          </a>
+                        )}
+                        {isPdf && c.imageUrl && (
+                          <a
+                            href={c.imageUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-indigo-300 hover:text-indigo-200"
+                          >
+                            Open PDF
+                          </a>
+                        )}
                       </div>
                     )}
-                    <div className="p-5">
-                      <h3 className="font-bold">{c.title}</h3>
-                      <p className="text-sm text-neutral-400 mt-1">
-                        {c.issuer}
-                        {c.issueDate && ` · ${fmtMonth(c.issueDate)}`}
-                      </p>
-                    </div>
-                  </button>
-                  {(c.credentialUrl ||
-                    (c.imageUrl && c.imageUrl.toLowerCase().endsWith(".pdf"))) && (
-                    <div className="px-5 pb-5 flex gap-3 text-xs font-medium">
-                      {c.credentialUrl && (
-                        <a
-                          href={c.credentialUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-indigo-300 hover:text-indigo-200"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          Verify
-                        </a>
-                      )}
-                      {c.imageUrl && c.imageUrl.toLowerCase().endsWith(".pdf") && (
-                        <a
-                          href={c.imageUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-indigo-300 hover:text-indigo-200"
-                        >
-                          PDF
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </Reveal>
         )}

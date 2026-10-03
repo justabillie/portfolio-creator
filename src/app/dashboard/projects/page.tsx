@@ -10,6 +10,7 @@ import {
   Code2,
   FolderKanban,
   ImageIcon,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -28,24 +29,22 @@ import { springSoft } from "@/lib/motion";
 type Project = {
   id: string;
   title: string;
+  role: string | null;
   description: string | null;
   techStack: string[];
   imageUrl: string | null;
   demoUrl: string | null;
   repoUrl: string | null;
-  startDate: string | null;
-  endDate: string | null;
 };
 
 const emptyForm = {
   title: "",
+  role: "",
   description: "",
   techStackInput: "",
   imageUrl: "",
   demoUrl: "",
   repoUrl: "",
-  startDate: "",
-  endDate: "",
 };
 
 export default function ProjectsPage() {
@@ -78,13 +77,12 @@ export default function ProjectsPage() {
     setEditingId(p.id);
     setForm({
       title: p.title,
+      role: p.role ?? "",
       description: p.description ?? "",
       techStackInput: p.techStack.join(", "),
       imageUrl: p.imageUrl ?? "",
       demoUrl: p.demoUrl ?? "",
       repoUrl: p.repoUrl ?? "",
-      startDate: p.startDate ? p.startDate.slice(0, 10) : "",
-      endDate: p.endDate ? p.endDate.slice(0, 10) : "",
     });
     setModalOpen(true);
   }
@@ -94,6 +92,7 @@ export default function ProjectsPage() {
     setSaving(true);
     const payload = {
       title: form.title,
+      role: form.role || null,
       description: form.description || null,
       techStack: form.techStackInput
         .split(",")
@@ -102,8 +101,6 @@ export default function ProjectsPage() {
       imageUrl: form.imageUrl || null,
       demoUrl: form.demoUrl || null,
       repoUrl: form.repoUrl || null,
-      startDate: form.startDate || null,
-      endDate: form.endDate || null,
     };
     const url = editingId ? `/api/projects/${editingId}` : "/api/projects";
     const method = editingId ? "PUT" : "POST";
@@ -138,7 +135,7 @@ export default function ProjectsPage() {
     <div>
       <PageHeader
         title="Projects"
-        description="Showcase your best work. Add links, tech stack, and screenshots."
+        description="Showcase your best work. Add your role, tech stack, and links."
         action={
           !loading && projects.length > 0 ? (
             <Btn onClick={openCreate}>
@@ -166,7 +163,6 @@ export default function ProjectsPage() {
                 transition={{ ...springSoft, delay: i * 0.03 }}
                 className="group rounded-xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:shadow-sm transition-all flex flex-col"
               >
-                {/* Image or slim placeholder — only ~40% of card height */}
                 {p.imageUrl ? (
                   <div className="aspect-[16/9] bg-neutral-100 overflow-hidden shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -182,7 +178,6 @@ export default function ProjectsPage() {
                   </div>
                 )}
 
-                {/* Body */}
                 <div className="p-4 flex-1 flex flex-col">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-semibold text-sm leading-tight line-clamp-1">
@@ -205,6 +200,13 @@ export default function ProjectsPage() {
                       </button>
                     </div>
                   </div>
+
+                  {p.role && (
+                    <div className="flex items-center gap-1 mt-1 text-[11px] text-neutral-500">
+                      <Users className="h-3 w-3" />
+                      {p.role}
+                    </div>
+                  )}
 
                   {p.description && (
                     <p className="text-xs text-neutral-500 mt-1.5 line-clamp-2 leading-relaxed">
@@ -270,7 +272,7 @@ export default function ProjectsPage() {
               {editingId ? "Edit project" : "New project"}
             </DialogTitle>
             <DialogDescription>
-              Fill in what you built, where to find it, and what you learned.
+              Fill in what you built, your role, and where to find it.
             </DialogDescription>
           </DialogHeader>
 
@@ -282,6 +284,17 @@ export default function ProjectsPage() {
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="ポートフォリーヨ"
                 autoFocus
+              />
+            </Field>
+
+            <Field
+              label="Your role"
+              hint="e.g. Solo project · Lead Developer · Frontend · Team of 4"
+            >
+              <Input
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                placeholder="Solo project"
               />
             </Field>
 
@@ -331,27 +344,6 @@ export default function ProjectsPage() {
                   value={form.repoUrl}
                   onChange={(e) => setForm({ ...form, repoUrl: e.target.value })}
                   placeholder="https://github.com/…"
-                />
-              </Field>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Start date">
-                <Input
-                  type="date"
-                  value={form.startDate}
-                  onChange={(e) =>
-                    setForm({ ...form, startDate: e.target.value })
-                  }
-                />
-              </Field>
-              <Field label="End date">
-                <Input
-                  type="date"
-                  value={form.endDate}
-                  onChange={(e) =>
-                    setForm({ ...form, endDate: e.target.value })
-                  }
                 />
               </Field>
             </div>

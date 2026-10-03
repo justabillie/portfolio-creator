@@ -9,19 +9,19 @@ import {
   Calendar,
   Award,
   FileText,
+  Users,
 } from "lucide-react";
 
 export type DetailContent =
   | {
       type: "project";
       title: string;
+      role?: string | null;
       description?: string | null;
       techStack?: string[];
       imageUrl?: string | null;
       demoUrl?: string | null;
       repoUrl?: string | null;
-      startDate?: string | Date | null;
-      endDate?: string | Date | null;
     }
   | {
       type: "experience";
@@ -114,16 +114,41 @@ export function PortfolioDetailModal({
             </button>
 
             {content.type === "project" && (
-              <ProjectDetail content={content} isModern={isModern} subtext={subtext} subtle={subtle} chipBg={chipBg} divider={divider} />
+              <ProjectDetail
+                content={content}
+                isModern={isModern}
+                subtext={subtext}
+                subtle={subtle}
+                chipBg={chipBg}
+                divider={divider}
+              />
             )}
             {content.type === "experience" && (
-              <ExperienceDetail content={content} isModern={isModern} subtext={subtext} subtle={subtle} divider={divider} />
+              <ExperienceDetail
+                content={content}
+                isModern={isModern}
+                subtext={subtext}
+                subtle={subtle}
+                divider={divider}
+              />
             )}
             {content.type === "education" && (
-              <EducationDetail content={content} isModern={isModern} subtext={subtext} subtle={subtle} divider={divider} />
+              <EducationDetail
+                content={content}
+                isModern={isModern}
+                subtext={subtext}
+                subtle={subtle}
+                divider={divider}
+              />
             )}
             {content.type === "certificate" && (
-              <CertificateDetail content={content} isModern={isModern} subtext={subtext} subtle={subtle} divider={divider} />
+              <CertificateDetail
+                content={content}
+                isModern={isModern}
+                subtext={subtext}
+                subtle={subtle}
+                divider={divider}
+              />
             )}
           </motion.div>
         </motion.div>
@@ -150,21 +175,29 @@ function ProjectDetail({
   return (
     <div>
       {content.imageUrl && (
-        <div className={`aspect-video overflow-hidden ${isModern ? "bg-neutral-900" : "bg-neutral-100"}`}>
+        <div
+          className={`aspect-video overflow-hidden ${
+            isModern ? "bg-neutral-900" : "bg-neutral-100"
+          }`}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={content.imageUrl} alt={content.title} className="w-full h-full object-cover" />
+          <img
+            src={content.imageUrl}
+            alt={content.title}
+            className="w-full h-full object-cover"
+          />
         </div>
       )}
 
       <div className="p-6 sm:p-8">
-        <h2 className="text-2xl sm:text-3xl font-bold pr-10">{content.title}</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold pr-10">
+          {content.title}
+        </h2>
 
-        {(content.startDate || content.endDate) && (
+        {content.role && (
           <p className={`text-sm ${subtle} mt-2 inline-flex items-center gap-1.5`}>
-            <Calendar className="h-3.5 w-3.5" />
-            {content.startDate && fmtMonth(content.startDate)}
-            {content.startDate && (content.endDate || " ") ? " – " : ""}
-            {content.endDate ? fmtMonth(content.endDate) : content.startDate ? "Present" : ""}
+            <Users className="h-3.5 w-3.5" />
+            {content.role}
           </p>
         )}
 
@@ -176,10 +209,15 @@ function ProjectDetail({
 
         {content.techStack && content.techStack.length > 0 && (
           <div className={`mt-6 pt-6 border-t ${divider}`}>
-            <h3 className={`text-xs uppercase tracking-wider ${subtle} mb-3`}>Tech stack</h3>
+            <h3 className={`text-xs uppercase tracking-wider ${subtle} mb-3`}>
+              Tech stack
+            </h3>
             <div className="flex flex-wrap gap-1.5">
               {content.techStack.map((t) => (
-                <span key={t} className={`text-xs px-2.5 py-1 rounded-full border ${chipBg}`}>
+                <span
+                  key={t}
+                  className={`text-xs px-2.5 py-1 rounded-full border ${chipBg}`}
+                >
                   {t}
                 </span>
               ))}
@@ -259,14 +297,14 @@ function ExperienceDetail({
       </div>
 
       {content.description && (
-        <>
-          <div className={`mt-6 pt-6 border-t ${divider}`}>
-            <h3 className={`text-xs uppercase tracking-wider ${subtle} mb-3`}>Details</h3>
-            <p className={`${subtext} whitespace-pre-line leading-relaxed`}>
-              {content.description}
-            </p>
-          </div>
-        </>
+        <div className={`mt-6 pt-6 border-t ${divider}`}>
+          <h3 className={`text-xs uppercase tracking-wider ${subtle} mb-3`}>
+            Details
+          </h3>
+          <p className={`${subtext} whitespace-pre-line leading-relaxed`}>
+            {content.description}
+          </p>
+        </div>
       )}
     </div>
   );
@@ -306,7 +344,9 @@ function EducationDetail({
 
       {content.description && (
         <div className={`mt-6 pt-6 border-t ${divider}`}>
-          <h3 className={`text-xs uppercase tracking-wider ${subtle} mb-3`}>Details</h3>
+          <h3 className={`text-xs uppercase tracking-wider ${subtle} mb-3`}>
+            Details
+          </h3>
           <p className={`${subtext} whitespace-pre-line leading-relaxed`}>
             {content.description}
           </p>
@@ -334,9 +374,17 @@ function CertificateDetail({
   return (
     <div>
       {content.imageUrl && !isPdf && (
-        <div className={`aspect-[4/3] overflow-hidden ${isModern ? "bg-neutral-900" : "bg-neutral-100"}`}>
+        <div
+          className={`aspect-[4/3] overflow-hidden ${
+            isModern ? "bg-neutral-900" : "bg-neutral-100"
+          }`}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={content.imageUrl} alt={content.title} className="w-full h-full object-cover" />
+          <img
+            src={content.imageUrl}
+            alt={content.title}
+            className="w-full h-full object-cover"
+          />
         </div>
       )}
 

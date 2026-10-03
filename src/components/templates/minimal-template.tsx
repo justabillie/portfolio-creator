@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MapPin, Phone, ExternalLink, Code2 } from "lucide-react";
+import { Mail, MapPin, Phone, ExternalLink, Code2, Users } from "lucide-react";
 import type { PortfolioData } from "@/lib/portfolio";
 import { Reveal } from "@/components/reveal";
 import {
@@ -169,13 +169,12 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                         setDetail({
                           type: "project",
                           title: p.title,
+                          role: p.role,
                           description: p.description,
                           techStack: p.techStack,
                           imageUrl: p.imageUrl,
                           demoUrl: p.demoUrl,
                           repoUrl: p.repoUrl,
-                          startDate: p.startDate,
-                          endDate: p.endDate,
                         })
                       }
                       className="text-left w-full"
@@ -185,6 +184,12 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                           {p.title}
                         </h3>
                       </div>
+                      {p.role && (
+                        <p className="text-xs text-neutral-400 mt-0.5 inline-flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {p.role}
+                        </p>
+                      )}
                       {p.description && (
                         <p className="text-sm text-neutral-600 mt-2 whitespace-pre-line leading-relaxed line-clamp-3">
                           {p.description}
@@ -197,7 +202,6 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                       )}
                     </button>
 
-                    {/* Links row — always visible */}
                     {(p.demoUrl || p.repoUrl) && (
                       <div className="flex flex-wrap gap-3 mt-3 text-xs">
                         {p.demoUrl && (
@@ -304,60 +308,84 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
           <Reveal delay={0.05}>
             <section className="mt-16">
               <Heading>Certificates</Heading>
-              <div className="space-y-4">
-                {certificates.map((c) => (
-                  <div key={c.id}>
-                    <button
-                      onClick={() =>
-                        setDetail({
-                          type: "certificate",
-                          title: c.title,
-                          issuer: c.issuer,
-                          issueDate: c.issueDate,
-                          credentialUrl: c.credentialUrl,
-                          imageUrl: c.imageUrl,
-                        })
-                      }
-                      className="text-left w-full group hover:opacity-80 transition-opacity block"
-                    >
-                      <div className="flex items-baseline justify-between gap-4 flex-wrap">
-                        <h3 className="text-sm font-semibold group-hover:underline underline-offset-4">
-                          {c.title}
-                        </h3>
-                        <span className="text-xs text-neutral-400 tabular-nums">
-                          {c.issueDate && fmtMonth(c.issueDate)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-neutral-500 mt-0.5">{c.issuer}</p>
-                    </button>
-                    {(c.credentialUrl ||
-                      (c.imageUrl && c.imageUrl.toLowerCase().endsWith(".pdf"))) && (
-                      <div className="flex gap-3 mt-1.5 text-xs">
-                        {c.credentialUrl && (
-                          <a
-                            href={c.credentialUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900 underline underline-offset-4"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            Verify
-                          </a>
-                        )}
-                        {c.imageUrl && c.imageUrl.toLowerCase().endsWith(".pdf") && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {certificates.map((c) => {
+                  const isPdf = c.imageUrl?.toLowerCase().endsWith(".pdf");
+                  return (
+                    <div key={c.id}>
+                      {c.imageUrl && !isPdf && (
+                        <button
+                          onClick={() =>
+                            setDetail({
+                              type: "certificate",
+                              title: c.title,
+                              issuer: c.issuer,
+                              issueDate: c.issueDate,
+                              credentialUrl: c.credentialUrl,
+                              imageUrl: c.imageUrl,
+                            })
+                          }
+                          className="block w-full text-left"
+                        >
+                          <div className="aspect-[4/3] bg-neutral-100 rounded-lg overflow-hidden mb-3 border border-neutral-200 group-hover:border-neutral-400 transition-colors">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={c.imageUrl}
+                              alt={c.title}
+                              className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
+                            />
+                          </div>
+                        </button>
+                      )}
+                      {c.imageUrl && isPdf && (
+                        <div className="aspect-[4/3] bg-neutral-100 rounded-lg overflow-hidden mb-3 border border-neutral-200 relative">
+                          <iframe
+                            src={`${c.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
+                            className="w-full h-full pointer-events-none"
+                            title={c.title}
+                          />
                           <a
                             href={c.imageUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900 underline underline-offset-4"
-                          >
-                            PDF
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                            className="absolute inset-0"
+                            aria-label={`View ${c.title}`}
+                          />
+                        </div>
+                      )}
+                      <h3 className="text-sm font-semibold">{c.title}</h3>
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        {c.issuer}
+                        {c.issueDate && ` · ${fmtMonth(c.issueDate)}`}
+                      </p>
+                      {(c.credentialUrl || isPdf) && (
+                        <div className="flex gap-3 mt-2 text-xs">
+                          {c.credentialUrl && (
+                            <a
+                              href={c.credentialUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900 underline underline-offset-4"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Verify
+                            </a>
+                          )}
+                          {isPdf && c.imageUrl && (
+                            <a
+                              href={c.imageUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900 underline underline-offset-4"
+                            >
+                              Open PDF
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </Reveal>
