@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { verifySessionToken, type SessionPayload } from "./auth";
-import { prisma } from "./prisma";
+import { prisma, withRetry } from "./prisma";
 
 export const SESSION_COOKIE = "portfolio_session";
 
@@ -11,7 +11,7 @@ export async function setSessionCookie(token: string) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    // No maxAge/expires -> session cookie.
+    // No maxAge -> session cookie.
     // It disappears when the browser fully closes.
   });
 }
@@ -32,10 +32,10 @@ export async function getCurrentUser() {
   const payload = await getSessionPayload();
   if (!payload) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: payload.userId },
-    include: { profile: true },
-  });
-
-  return user;
+  return withRetry(() =>
+    prisma.user.findUnique({
+      where: { id: payload.userId },
+      include: { profile: true },
+    })
+  );
 }

@@ -3,7 +3,6 @@ import { MinimalTemplate } from "@/components/templates/minimal-template";
 import { ModernTemplate } from "@/components/templates/modern-template";
 import type { PortfolioData } from "@/lib/portfolio";
 
-type Params = Promise<{ theme?: string }>;
 type Search = Promise<{ theme?: string }>;
 
 export const metadata = {
@@ -18,13 +17,13 @@ const demoData: PortfolioData = {
   profile: {
     id: "demo-profile",
     userId: "demo",
-    fullName: "Alex Tanaka",
-    headline: "Full-Stack Developer · React & Node",
-    bio: "I build calm, functional web apps that people actually enjoy using. Currently studying Computer Science and shipping side projects on weekends.",
-    photoUrl: null,
-    location: "Yangon, Myanmar",
-    email: "alex@example.com",
-    phone: "+95 9 123 456 789",
+    fullName: "Mia Chen",
+    headline: "Frontend Developer · Design Systems & Motion",
+    bio: "I craft interfaces that feel calm and considered. Currently building design systems at a small product studio, and shipping side projects on weekends.",
+    photoUrl: "/portfolio_profile.jpg",
+    location: "Singapore",
+    email: "mia@example.com",
+    phone: "+65 8123 4567",
     theme: "minimal",
     isPublished: true,
     updatedAt: new Date(),
@@ -33,56 +32,56 @@ const demoData: PortfolioData = {
     {
       id: "p1",
       userId: "demo",
-      title: "ポートフォリーヨ",
-      role: "Solo Project",
+      title: "Lumen",
+      role: "Solo project · Design + Dev",
       description:
-        "A portfolio builder for students. Add projects, experience, and certificates — then share one link that says everything about you. Includes two themes and file uploads.",
-      techStack: ["Next.js", "TypeScript", "Tailwind", "Prisma", "PostgreSQL"],
+        "A lightweight image editor that runs entirely in the browser. Built as an experiment with the Canvas API and Web Workers. No backend, no uploads — everything stays on your device.",
+      techStack: ["Svelte", "TypeScript", "Canvas API", "Vite"],
       imageUrl: null,
-      demoUrl: "https://portfolio-creator-nu.vercel.app",
-      repoUrl: "https://github.com/justabillie/portfolio-creator",
+      demoUrl: "https://example.com/lumen",
+      repoUrl: "https://github.com/example/lumen",
       sortOrder: 0,
       createdAt: new Date(),
     },
     {
       id: "p2",
       userId: "demo",
-      title: "Filter-X",
-      role: "UI Developer",
+      title: "Cadence",
+      role: "Team of 3 · Frontend lead",
       description:
-        "A web app that filters and processes data based on user-defined rules. Built to practice React state management and backend integration.",
-      techStack: ["React", "TypeScript", "Tailwind", "Node.js"],
+        "A habit tracker that focuses on streaks over stats. Designed and built with two friends over a two-week sprint. My role covered the UI, animations, and the offline-first sync layer.",
+      techStack: ["React", "Zustand", "IndexedDB", "Tailwind"],
       imageUrl: null,
       demoUrl: null,
-      repoUrl: "https://github.com/example/filter-x",
+      repoUrl: "https://github.com/example/cadence",
       sortOrder: 1,
       createdAt: new Date(),
     },
     {
       id: "p3",
       userId: "demo",
-      title: "Dorabola",
-      role: "Solo Project",
+      title: "Stillpoint",
+      role: "Solo project",
       description:
-        "A desktop application that recommends Korean dramas based on personal viewing history and ratings. Users can rate dramas they've watched, and the app learns their preferences over time.",
-      techStack: ["Python", "Tkinter", "Pandas", "SQLite"],
+        "A minimal meditation timer for people who dislike apps. One screen, no accounts, no notifications. Just a ring that expands as you breathe.",
+      techStack: ["React Native", "Expo", "Reanimated"],
       imageUrl: null,
-      demoUrl: null,
-      repoUrl: "https://github.com/example/dorabola",
+      demoUrl: "https://example.com/stillpoint",
+      repoUrl: "https://github.com/example/stillpoint",
       sortOrder: 2,
       createdAt: new Date(),
     },
     {
       id: "p4",
       userId: "demo",
-      title: "DBitual",
-      role: "Team of 3 · Backend",
+      title: "Atlas Notes",
+      role: "Contract work · Frontend",
       description:
-        "A personal habit diary that helps track daily activities through custom timelines. Features a monthly calendar view, time-block tracking, and exportable reports.",
-      techStack: ["Python", "Flask", "SQLite", "JavaScript"],
+        "A notes app that maps related ideas to each other. Built the entire frontend including the graph view, keyboard-first interaction model, and offline caching.",
+      techStack: ["Next.js", "D3.js", "PostgreSQL", "tRPC"],
       imageUrl: null,
       demoUrl: null,
-      repoUrl: "https://github.com/example/dbitual",
+      repoUrl: null,
       sortOrder: 3,
       createdAt: new Date(),
     },
@@ -91,25 +90,25 @@ const demoData: PortfolioData = {
     {
       id: "e1",
       userId: "demo",
-      company: "TechCorp Myanmar",
-      role: "Software Engineer Intern",
-      location: "Yangon (Hybrid)",
-      startDate: new Date("2025-06-01"),
+      company: "Foundry Studio",
+      role: "Frontend Developer",
+      location: "Singapore (Hybrid)",
+      startDate: new Date("2024-08-01"),
       endDate: null,
       description:
-        "Building internal tools with React and Node. Shipped a dashboard that reduced manual reporting time by 40%.",
+        "Building design systems and marketing sites for early-stage startups. Shipped a component library used across six client projects.",
       sortOrder: 0,
     },
     {
       id: "e2",
       userId: "demo",
-      company: "Freelance",
-      role: "Web Developer",
+      company: "Paper Kite",
+      role: "Junior Developer",
       location: "Remote",
-      startDate: new Date("2024-01-01"),
-      endDate: new Date("2025-05-31"),
+      startDate: new Date("2023-03-01"),
+      endDate: new Date("2024-07-31"),
       description:
-        "Built landing pages and small business websites for local clients. Handled design, development, and deployment.",
+        "Worked on customer-facing dashboards in React. Learned a lot about performance profiling and accessibility.",
       sortOrder: 1,
     },
   ],
@@ -117,55 +116,66 @@ const demoData: PortfolioData = {
     {
       id: "ed1",
       userId: "demo",
-      institution: "University of Information Technology",
-      degree: "B.Sc.",
+      institution: "National University of Singapore",
+      degree: "B.Comp.",
       field: "Computer Science",
-      startDate: new Date("2023-11-01"),
-      endDate: new Date("2028-10-31"),
-      gpa: "3.9",
+      startDate: new Date("2021-08-01"),
+      endDate: new Date("2025-06-30"),
+      gpa: "4.2",
       description:
-        "Relevant coursework: Data Structures, Algorithms, Databases, Web Development.",
+        "Focus on human-computer interaction and web technologies. Led the design team for the student hackathon.",
       sortOrder: 0,
     },
   ],
   skills: [
     { id: "s1", userId: "demo", name: "TypeScript", category: "Languages", proficiency: 5, sortOrder: 0 },
-    { id: "s2", userId: "demo", name: "Python", category: "Languages", proficiency: 4, sortOrder: 1 },
-    { id: "s3", userId: "demo", name: "JavaScript", category: "Languages", proficiency: 5, sortOrder: 2 },
+    { id: "s2", userId: "demo", name: "JavaScript", category: "Languages", proficiency: 5, sortOrder: 1 },
+    { id: "s3", userId: "demo", name: "Python", category: "Languages", proficiency: 3, sortOrder: 2 },
     { id: "s4", userId: "demo", name: "React", category: "Frameworks", proficiency: 5, sortOrder: 3 },
     { id: "s5", userId: "demo", name: "Next.js", category: "Frameworks", proficiency: 4, sortOrder: 4 },
-    { id: "s6", userId: "demo", name: "Tailwind CSS", category: "Frameworks", proficiency: 5, sortOrder: 5 },
-    { id: "s7", userId: "demo", name: "PostgreSQL", category: "Databases", proficiency: 4, sortOrder: 6 },
-    { id: "s8", userId: "demo", name: "Git & GitHub", category: "Tools", proficiency: 5, sortOrder: 7 },
-    { id: "s9", userId: "demo", name: "Docker", category: "Tools", proficiency: 3, sortOrder: 8 },
-    { id: "s10", userId: "demo", name: "Figma", category: "Tools", proficiency: 4, sortOrder: 9 },
+    { id: "s6", userId: "demo", name: "Svelte", category: "Frameworks", proficiency: 4, sortOrder: 5 },
+    { id: "s7", userId: "demo", name: "Tailwind CSS", category: "Frameworks", proficiency: 5, sortOrder: 6 },
+    { id: "s8", userId: "demo", name: "PostgreSQL", category: "Databases", proficiency: 3, sortOrder: 7 },
+    { id: "s9", userId: "demo", name: "Figma", category: "Tools", proficiency: 5, sortOrder: 8 },
+    { id: "s10", userId: "demo", name: "Git & GitHub", category: "Tools", proficiency: 5, sortOrder: 9 },
+    { id: "s11", userId: "demo", name: "Playwright", category: "Tools", proficiency: 3, sortOrder: 10 },
   ],
   certificates: [
     {
       id: "c1",
       userId: "demo",
-      title: "AWS Certified Cloud Practitioner",
-      issuer: "Amazon Web Services",
-      issueDate: new Date("2025-03-15"),
-      credentialUrl: "https://aws.amazon.com/verification",
+      title: "Google UX Design Professional",
+      issuer: "Coursera",
+      issueDate: new Date("2024-11-10"),
+      credentialUrl: "https://coursera.org/verify",
       imageUrl: null,
       sortOrder: 0,
     },
     {
       id: "c2",
       userId: "demo",
-      title: "Meta Front-End Developer",
-      issuer: "Coursera",
-      issueDate: new Date("2024-11-20"),
-      credentialUrl: "https://coursera.org/verify",
+      title: "JavaScript Algorithms and Data Structures",
+      issuer: "freeCodeCamp",
+      issueDate: new Date("2023-05-20"),
+      credentialUrl: "https://freecodecamp.org/certification",
       imageUrl: null,
       sortOrder: 1,
     },
+    {
+      id: "c3",
+      userId: "demo",
+      title: "Accessibility Fundamentals",
+      issuer: "Deque University",
+      issueDate: new Date("2024-02-05"),
+      credentialUrl: "https://dequeuniversity.com/verify",
+      imageUrl: null,
+      sortOrder: 2,
+    },
   ],
   socialLinks: [
-    { id: "l1", userId: "demo", platform: "GitHub", url: "https://github.com/justabillie", sortOrder: 0 },
-    { id: "l2", userId: "demo", platform: "LinkedIn", url: "https://linkedin.com", sortOrder: 1 },
-    { id: "l3", userId: "demo", platform: "Twitter", url: "https://twitter.com", sortOrder: 2 },
+    { id: "l1", userId: "demo", platform: "GitHub", url: "https://github.com/example", sortOrder: 0 },
+    { id: "l2", userId: "demo", platform: "LinkedIn", url: "https://linkedin.com/in/example", sortOrder: 1 },
+    { id: "l3", userId: "demo", platform: "Website", url: "https://example.com", sortOrder: 2 },
   ],
   cvFile: null,
 };
@@ -173,7 +183,6 @@ const demoData: PortfolioData = {
 export default async function DemoPage({
   searchParams,
 }: {
-  params: Params;
   searchParams: Search;
 }) {
   const sp = await searchParams;
@@ -181,7 +190,6 @@ export default async function DemoPage({
 
   return (
     <>
-      {/* Floating switcher */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1 rounded-full bg-neutral-900/90 backdrop-blur-md border border-white/10 shadow-lg">
         <Link
           href="/demo?theme=minimal"
@@ -211,7 +219,6 @@ export default async function DemoPage({
         </Link>
       </div>
 
-      {/* Top padding so the floating switcher doesn't cover content */}
       <div className="pt-16">
         {theme === "modern" ? (
           <ModernTemplate data={demoData} />

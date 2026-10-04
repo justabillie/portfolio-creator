@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPortfolioByUsername } from "@/lib/portfolio";
+import { getSessionPayload } from "@/lib/session";
 import { MinimalTemplate } from "@/components/templates/minimal-template";
 import { ModernTemplate } from "@/components/templates/modern-template";
+import { OwnerThemeSwitcher } from "@/components/owner-theme-switcher";
 
 type Params = Promise<{ username: string }>;
 
@@ -42,15 +44,12 @@ export default async function PublicPortfolioPage({
 
   if (!user) notFound();
 
-  // Not published -> friendly notice
   if (!user.profile?.isPublished) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-neutral-50 px-4">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold mb-2">ポートフォリーヨ</h1>
-          <p className="text-neutral-700">
-            This portfolio is not published yet.
-          </p>
+          <p className="text-neutral-700">This portfolio is not published yet.</p>
           <p className="text-sm text-neutral-500 mt-4">
             If this is your portfolio, log in and enable{" "}
             <span className="font-medium">Published</span> on your{" "}
@@ -64,11 +63,14 @@ export default async function PublicPortfolioPage({
     );
   }
 
-  const theme = user.profile.theme === "modern" ? "modern" : "minimal";
+  const session = await getSessionPayload();
+  const isOwner = session?.userId === user.id;
+  const currentTheme = user.profile.theme === "modern" ? "modern" : "minimal";
 
   return (
     <main>
-      {theme === "modern" ? (
+      {isOwner && <OwnerThemeSwitcher currentTheme={currentTheme} />}
+      {currentTheme === "modern" ? (
         <ModernTemplate data={user} />
       ) : (
         <MinimalTemplate data={user} />

@@ -12,24 +12,29 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { prisma, withRetry } from "@/lib/prisma";
 import { PageHeader } from "@/components/page-header";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  // Quick counts
+  // Wrapped in withRetry so Neon cold-starts don't kill the dashboard
   const [projects, experiences, educations, skills, certificates, links, cv] =
-    await Promise.all([
-      prisma.project.count({ where: { userId: user.id } }),
-      prisma.experience.count({ where: { userId: user.id } }),
-      prisma.education.count({ where: { userId: user.id } }),
-      prisma.skill.count({ where: { userId: user.id } }),
-      prisma.certificate.count({ where: { userId: user.id } }),
-      prisma.socialLink.count({ where: { userId: user.id } }),
-      prisma.cvFile.findUnique({ where: { userId: user.id }, select: { id: true } }),
-    ]);
+    await withRetry(() =>
+      Promise.all([
+        prisma.project.count({ where: { userId: user.id } }),
+        prisma.experience.count({ where: { userId: user.id } }),
+        prisma.education.count({ where: { userId: user.id } }),
+        prisma.skill.count({ where: { userId: user.id } }),
+        prisma.certificate.count({ where: { userId: user.id } }),
+        prisma.socialLink.count({ where: { userId: user.id } }),
+        prisma.cvFile.findUnique({
+          where: { userId: user.id },
+          select: { id: true },
+        }),
+      ])
+    );
 
   const profileComplete = Boolean(
     user.profile?.headline && user.profile?.bio
@@ -50,7 +55,13 @@ export default async function DashboardPage() {
   const pct = Math.round((completedCount / completion.length) * 100);
 
   const cards = [
-    { href: "/dashboard/profile", label: "Profile", icon: UserIcon, count: profileComplete ? 1 : 0, done: profileComplete },
+    {
+      href: "/dashboard/profile",
+      label: "Profile",
+      icon: UserIcon,
+      count: profileComplete ? 1 : 0,
+      done: profileComplete,
+    },
     { href: "/dashboard/projects", label: "Projects", icon: FolderKanban, count: projects },
     { href: "/dashboard/experience", label: "Experience", icon: Briefcase, count: experiences },
     { href: "/dashboard/education", label: "Education", icon: GraduationCap, count: educations },
@@ -67,7 +78,6 @@ export default async function DashboardPage() {
         description="Manage your portfolio content and publish when you're ready."
       />
 
-      {/* Progress + publish banner */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="rounded-2xl border border-neutral-200 bg-white p-6">
           <div className="flex items-center justify-between mb-3">
@@ -114,7 +124,6 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* Quick access grid */}
       <h2 className="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-3">
         Your content
       </h2>
