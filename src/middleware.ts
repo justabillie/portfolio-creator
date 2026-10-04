@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
 
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
+  // Protect dashboard
   if (pathname.startsWith("/dashboard") && !payload) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -18,6 +19,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Redirect logged-in users away from login/register to dashboard
   if (isAuthPage && payload) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
@@ -28,5 +30,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  // Only apply to auth-protected pages. Nothing about /demo, /u/*, or /.
   matcher: ["/dashboard/:path*", "/login", "/register"],
 };

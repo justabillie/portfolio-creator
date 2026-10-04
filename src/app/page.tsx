@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import {
   ArrowRight,
   Sparkles,
@@ -10,8 +9,8 @@ import {
   Award,
   Link2,
   Check,
+  ExternalLink,
 } from "lucide-react";
-import { getSessionPayload } from "@/lib/session";
 
 export const metadata = {
   title: "ポートフォリーヨ — Build your portfolio in minutes",
@@ -19,11 +18,7 @@ export const metadata = {
     "Create a beautiful, professional portfolio website in minutes. No coding required.",
 };
 
-export default async function HomePage() {
-  // If the user is already logged in, send them to the dashboard
-  const session = await getSessionPayload();
-  if (session) redirect("/dashboard");
-
+export default function HomePage() {
   const features = [
     {
       icon: FolderKanban,
@@ -59,7 +54,6 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 antialiased">
-      {/* ─────── Header ─────── */}
       <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/80 backdrop-blur-lg">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="font-bold text-lg tracking-tight">
@@ -82,7 +76,6 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* ─────── Hero ─────── */}
       <section className="relative overflow-hidden">
         <div
           aria-hidden
@@ -130,10 +123,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─────── Preview mockup ─────── */}
       <section className="max-w-5xl mx-auto px-5 sm:px-8 pb-20 sm:pb-28">
         <div className="relative rounded-2xl border border-neutral-200 bg-white shadow-2xl overflow-hidden">
-          {/* Fake browser chrome */}
           <div className="flex items-center gap-1.5 px-4 py-3 border-b border-neutral-200 bg-neutral-50">
             <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
@@ -143,7 +134,6 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Fake portfolio preview */}
           <div className="p-8 sm:p-12 text-left">
             <div className="flex items-center gap-4 mb-6">
               <div className="h-16 w-16 rounded-full bg-gradient-to-br from-neutral-300 to-neutral-100 shrink-0" />
@@ -177,7 +167,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─────── Features ─────── */}
       <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20 sm:pb-28">
         <div className="text-center mb-14">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
@@ -209,33 +198,146 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─────── Why section ─────── */}
+      {/* Live demo section */}
       <section className="bg-neutral-50 border-y border-neutral-200">
-        <div className="max-w-4xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-8 text-center">
-            Made for students and early-career developers
-          </h2>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            {[
-              "No sign-up friction — email and password",
-              "Two beautiful templates: Minimal and Modern",
-              "Upload images, PDFs, and your CV",
-              "Share one link anywhere",
-              "Mobile-friendly by default",
-              "Free — no credit card ever",
-            ].map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-0.5 h-5 w-5 rounded-full bg-neutral-900 flex items-center justify-center shrink-0">
-                  <Check className="h-3 w-3 text-white" />
-                </span>
-                <span className="text-sm text-neutral-700">{item}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-200 bg-white text-xs font-medium text-neutral-600 mb-5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live demo
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              See what you can build
+            </h2>
+            <p className="mt-4 text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+              A full example portfolio with projects, experience, education,
+              skills, and certificates. Try both themes — click either below.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Minimal preview */}
+            <Link
+              href="/demo?theme=minimal"
+              className="group rounded-2xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:-translate-y-1 hover:shadow-xl transition-all"
+            >
+              <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-neutral-200 bg-neutral-50">
+                <span className="h-2 w-2 rounded-full bg-red-400" />
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                <div className="ml-3 flex-1 rounded-md bg-white border border-neutral-200 px-2.5 py-0.5 text-[10px] text-neutral-500 truncate">
+                  /demo?theme=minimal
+                </div>
+              </div>
+
+              <div className="bg-white p-8">
+                <div className="text-2xl font-bold tracking-tight">Alex Tanaka</div>
+                <div className="text-sm text-neutral-500 mt-1">
+                  Full-Stack Developer · React & Node
+                </div>
+                <div className="mt-4 space-y-1.5">
+                  <div className="h-2 w-full bg-neutral-100 rounded" />
+                  <div className="h-2 w-5/6 bg-neutral-100 rounded" />
+                </div>
+                <div className="text-[10px] uppercase tracking-widest text-neutral-400 font-semibold mt-6 mb-2">
+                  Experience
+                </div>
+                <div className="h-2.5 w-2/3 bg-neutral-900/70 rounded" />
+                <div className="h-2 w-1/2 bg-neutral-200 rounded mt-1.5" />
+                <div className="h-2 w-full bg-neutral-100 rounded mt-3" />
+                <div className="h-2 w-4/5 bg-neutral-100 rounded mt-1.5" />
+              </div>
+
+              <div className="px-5 py-4 border-t border-neutral-200 bg-white flex items-center justify-between">
+                <div>
+                  <div className="font-semibold text-sm">Minimal theme</div>
+                  <div className="text-xs text-neutral-500 mt-0.5">
+                    Editorial · Monochrome · Typography-first
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all" />
+              </div>
+            </Link>
+
+            {/* Modern preview */}
+            <Link
+              href="/demo?theme=modern"
+              className="group rounded-2xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:-translate-y-1 hover:shadow-xl transition-all"
+            >
+              <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-neutral-200 bg-neutral-50">
+                <span className="h-2 w-2 rounded-full bg-red-400" />
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                <div className="ml-3 flex-1 rounded-md bg-white border border-neutral-200 px-2.5 py-0.5 text-[10px] text-neutral-500 truncate">
+                  /demo?theme=modern
+                </div>
+              </div>
+
+              <div className="bg-neutral-950 p-8 text-white relative overflow-hidden">
+                <div className="absolute -top-20 -left-20 w-40 h-40 rounded-full bg-indigo-500/30 blur-3xl" />
+                <div className="absolute -top-10 right-0 w-32 h-32 rounded-full bg-fuchsia-500/30 blur-3xl" />
+                <div className="relative">
+                  <div className="text-2xl font-black tracking-tight bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-transparent">
+                    Alex Tanaka
+                  </div>
+                  <div className="text-sm text-neutral-400 mt-1">
+                    Full-Stack Developer · React & Node
+                  </div>
+                  <div className="flex gap-1.5 mt-4">
+                    <div className="h-6 w-20 rounded-full bg-white/10 border border-white/10" />
+                    <div className="h-6 w-16 rounded-full bg-white/10 border border-white/10" />
+                  </div>
+                  <div className="text-[10px] uppercase tracking-widest text-neutral-500 font-semibold mt-6 mb-2">
+                    Projects
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                    <div className="h-2.5 w-1/2 bg-white/70 rounded" />
+                    <div className="h-2 w-full bg-white/10 rounded mt-2" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-4 border-t border-neutral-200 bg-white flex items-center justify-between">
+                <div>
+                  <div className="font-semibold text-sm">Modern theme</div>
+                  <div className="text-xs text-neutral-500 mt-0.5">
+                    Dark · Gradient · Card-based
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all" />
+              </div>
+            </Link>
+          </div>
+
+          <p className="text-center text-xs text-neutral-500 mt-8">
+            Demo content is fictional. Real portfolios use your own data.
+          </p>
         </div>
       </section>
 
-      {/* ─────── CTA ─────── */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-8 text-center">
+          Made for students and early-career developers
+        </h2>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+          {[
+            "No sign-up friction — email and password",
+            "Two beautiful templates: Minimal and Modern",
+            "Upload images, PDFs, and your CV",
+            "Share one link anywhere",
+            "Mobile-friendly by default",
+            "Free — no credit card ever",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-3">
+              <span className="mt-0.5 h-5 w-5 rounded-full bg-neutral-900 flex items-center justify-center shrink-0">
+                <Check className="h-3 w-3 text-white" />
+              </span>
+              <span className="text-sm text-neutral-700">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="max-w-3xl mx-auto px-5 sm:px-8 py-20 sm:py-28 text-center">
         <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
           Ready to build yours?
@@ -252,7 +354,6 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      {/* ─────── Footer ─────── */}
       <footer className="border-t border-neutral-200">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-neutral-500">
           <div>© {new Date().getFullYear()} ポートフォリーヨ</div>

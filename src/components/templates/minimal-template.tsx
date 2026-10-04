@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MapPin, Phone, ExternalLink, Code2, Users } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  ExternalLink,
+  Code2,
+  Users,
+  Award,
+  FileText,
+} from "lucide-react";
 import type { PortfolioData } from "@/lib/portfolio";
 import { Reveal } from "@/components/reveal";
 import {
@@ -307,82 +316,51 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
           <Reveal delay={0.05}>
             <section className="mt-16">
               <Heading>Certificates</Heading>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-3">
                 {certificates.map((c) => {
                   const isPdf = c.imageUrl?.toLowerCase().endsWith(".pdf");
                   return (
-                    <div key={c.id}>
-                      {c.imageUrl && !isPdf && (
-                        <button
-                          onClick={() =>
-                            setDetail({
-                              type: "certificate",
-                              title: c.title,
-                              issuer: c.issuer,
-                              issueDate: c.issueDate,
-                              credentialUrl: c.credentialUrl,
-                              imageUrl: c.imageUrl,
-                            })
-                          }
-                          className="block w-full text-left"
-                        >
-                          <div className="aspect-[4/3] bg-neutral-100 rounded-lg overflow-hidden mb-3 border border-neutral-200">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={c.imageUrl}
-                              alt={c.title}
-                              className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
-                            />
-                          </div>
-                        </button>
-                      )}
-                      {c.imageUrl && isPdf && (
-                        <div className="aspect-[4/3] bg-neutral-100 rounded-lg overflow-hidden mb-3 border border-neutral-200 relative">
-                          <iframe
-                            src={`${c.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
-                            className="w-full h-full pointer-events-none"
-                            title={c.title}
+                    <button
+                      key={c.id}
+                      onClick={() =>
+                        setDetail({
+                          type: "certificate",
+                          title: c.title,
+                          issuer: c.issuer,
+                          issueDate: c.issueDate,
+                          credentialUrl: c.credentialUrl,
+                          imageUrl: c.imageUrl,
+                        })
+                      }
+                      className="group w-full text-left rounded-xl border border-neutral-200 p-3 hover:border-neutral-400 hover:bg-neutral-50/50 transition-all flex items-center gap-4"
+                    >
+                      <div className="w-12 h-12 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center shrink-0 overflow-hidden">
+                        {c.imageUrl && !isPdf ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={c.imageUrl}
+                            alt={c.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                          <a
-                            href={c.imageUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="absolute inset-0"
-                            aria-label={`View ${c.title}`}
-                          />
-                        </div>
-                      )}
-                      <h3 className="text-sm font-semibold">{c.title}</h3>
-                      <p className="text-xs text-neutral-500 mt-0.5">
-                        {c.issuer}
-                        {c.issueDate && ` · ${fmtMonth(c.issueDate)}`}
-                      </p>
-                      {(c.credentialUrl || isPdf) && (
-                        <div className="flex gap-3 mt-2 text-xs">
-                          {c.credentialUrl && (
-                            <a
-                              href={c.credentialUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900 underline underline-offset-4"
-                            >
-                              <ExternalLink className="h-3 w-3" />
-                              Verify
-                            </a>
-                          )}
-                          {isPdf && c.imageUrl && (
-                            <a
-                              href={c.imageUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900 underline underline-offset-4"
-                            >
-                              Open PDF
-                            </a>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                        ) : isPdf ? (
+                          <FileText className="h-5 w-5 text-neutral-500" />
+                        ) : (
+                          <Award className="h-5 w-5 text-neutral-400" />
+                        )}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold group-hover:underline underline-offset-4 line-clamp-1">
+                          {c.title}
+                        </h3>
+                        <p className="text-xs text-neutral-500 mt-0.5 line-clamp-1">
+                          {c.issuer}
+                          {c.issueDate && ` · ${fmtMonth(c.issueDate)}`}
+                        </p>
+                      </div>
+
+                      <ExternalLink className="h-3.5 w-3.5 text-neutral-400 group-hover:text-neutral-900 shrink-0 transition-colors" />
+                    </button>
                   );
                 })}
               </div>
