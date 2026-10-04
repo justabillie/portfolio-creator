@@ -12,7 +12,7 @@ import {
   Users,
 } from "lucide-react";
 
-export type DetailContent =
+export type DashboardDetail =
   | {
       type: "project";
       title: string;
@@ -55,32 +55,13 @@ function fmtMonth(iso: string | Date) {
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-export function PortfolioDetailModal({
+export function DashboardDetailModal({
   content,
   onClose,
-  theme = "minimal",
 }: {
-  content: DetailContent | null;
+  content: DashboardDetail | null;
   onClose: () => void;
-  theme?: "minimal" | "modern";
 }) {
-  const isModern = theme === "modern";
-
-  const overlay = isModern
-    ? "bg-black/70 backdrop-blur-md"
-    : "bg-black/50 backdrop-blur-sm";
-
-  const panel = isModern
-    ? "bg-neutral-950 text-neutral-100 border border-white/10"
-    : "bg-white text-neutral-900 border border-neutral-200";
-
-  const subtext = isModern ? "text-neutral-400" : "text-neutral-600";
-  const subtle = isModern ? "text-neutral-500" : "text-neutral-500";
-  const divider = isModern ? "border-white/10" : "border-neutral-200";
-  const chipBg = isModern
-    ? "bg-indigo-500/10 text-indigo-300 border-indigo-500/20"
-    : "bg-neutral-100 text-neutral-700 border-neutral-200";
-
   return (
     <AnimatePresence>
       {content && (
@@ -90,7 +71,7 @@ export function PortfolioDetailModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           onClick={onClose}
-          className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${overlay}`}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -98,54 +79,25 @@ export function PortfolioDetailModal({
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className={`relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-2xl shadow-2xl ${panel}`}
+            className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-2xl shadow-2xl bg-white border border-neutral-200 text-neutral-900"
           >
             <button
               onClick={onClose}
               aria-label="Close"
-              className={`absolute top-4 right-4 z-10 p-2 rounded-lg transition-colors ${
-                isModern
-                  ? "bg-white/5 hover:bg-white/10 text-neutral-300"
-                  : "bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200"
-              }`}
+              className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
 
-            {content.type === "project" && (
-              <ProjectDetail
-                content={content}
-                isModern={isModern}
-                subtext={subtext}
-                subtle={subtle}
-                chipBg={chipBg}
-                divider={divider}
-              />
-            )}
+            {content.type === "project" && <ProjectDetail content={content} />}
             {content.type === "experience" && (
-              <ExperienceDetail
-                content={content}
-                subtext={subtext}
-                subtle={subtle}
-                divider={divider}
-              />
+              <ExperienceDetail content={content} />
             )}
             {content.type === "education" && (
-              <EducationDetail
-                content={content}
-                subtext={subtext}
-                subtle={subtle}
-                divider={divider}
-              />
+              <EducationDetail content={content} />
             )}
             {content.type === "certificate" && (
-              <CertificateDetail
-                content={content}
-                isModern={isModern}
-                subtext={subtext}
-                subtle={subtle}
-                divider={divider}
-              />
+              <CertificateDetail content={content} />
             )}
           </motion.div>
         </motion.div>
@@ -154,26 +106,19 @@ export function PortfolioDetailModal({
   );
 }
 
+const subtle = "text-neutral-500";
+const subtext = "text-neutral-600";
+const divider = "border-neutral-200";
+const chipBg = "bg-neutral-100 text-neutral-700 border-neutral-200";
+
 function ProjectDetail({
   content,
-  isModern,
-  subtext,
-  subtle,
-  chipBg,
-  divider,
 }: {
-  content: Extract<DetailContent, { type: "project" }>;
-  isModern: boolean;
-  subtext: string;
-  subtle: string;
-  chipBg: string;
-  divider: string;
+  content: Extract<DashboardDetail, { type: "project" }>;
 }) {
   return (
     <div className="p-6 sm:p-8">
-      <h2 className="text-2xl sm:text-3xl font-bold pr-10">
-        {content.title}
-      </h2>
+      <h2 className="text-2xl sm:text-3xl font-bold pr-10">{content.title}</h2>
 
       {content.role && (
         <p className={`text-sm ${subtle} mt-2 inline-flex items-center gap-1.5`}>
@@ -213,11 +158,7 @@ function ProjectDetail({
               href={content.demoUrl}
               target="_blank"
               rel="noreferrer"
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isModern
-                  ? "bg-white text-neutral-950 hover:bg-neutral-200"
-                  : "bg-neutral-900 text-white hover:bg-neutral-800"
-              }`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Live demo
@@ -228,11 +169,7 @@ function ProjectDetail({
               href={content.repoUrl}
               target="_blank"
               rel="noreferrer"
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
-                isModern
-                  ? "border-white/10 hover:bg-white/5"
-                  : "border-neutral-200 hover:bg-neutral-50"
-              }`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-200 text-sm font-medium hover:bg-neutral-50 transition-colors"
             >
               <Code2 className="h-3.5 w-3.5" />
               Source code
@@ -246,14 +183,8 @@ function ProjectDetail({
 
 function ExperienceDetail({
   content,
-  subtext,
-  subtle,
-  divider,
 }: {
-  content: Extract<DetailContent, { type: "experience" }>;
-  subtext: string;
-  subtle: string;
-  divider: string;
+  content: Extract<DashboardDetail, { type: "experience" }>;
 }) {
   return (
     <div className="p-6 sm:p-8">
@@ -290,14 +221,8 @@ function ExperienceDetail({
 
 function EducationDetail({
   content,
-  subtext,
-  subtle,
-  divider,
 }: {
-  content: Extract<DetailContent, { type: "education" }>;
-  subtext: string;
-  subtle: string;
-  divider: string;
+  content: Extract<DashboardDetail, { type: "education" }>;
 }) {
   return (
     <div className="p-6 sm:p-8">
@@ -334,32 +259,30 @@ function EducationDetail({
 
 function CertificateDetail({
   content,
-  isModern,
-  subtext,
-  subtle,
-  divider,
 }: {
-  content: Extract<DetailContent, { type: "certificate" }>;
-  isModern: boolean;
-  subtext: string;
-  subtle: string;
-  divider: string;
+  content: Extract<DashboardDetail, { type: "certificate" }>;
 }) {
   const isPdf = content.imageUrl?.toLowerCase().endsWith(".pdf");
 
   return (
     <div>
       {content.imageUrl && !isPdf && (
-        <div
-          className={`aspect-[4/3] overflow-hidden ${
-            isModern ? "bg-neutral-900" : "bg-neutral-100"
-          }`}
-        >
+        <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={content.imageUrl}
             alt={content.title}
             className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      {content.imageUrl && isPdf && (
+        <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
+          <iframe
+            src={`${content.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
+            className="w-full h-full"
+            title={content.title}
           />
         </div>
       )}
@@ -385,11 +308,7 @@ function CertificateDetail({
                 href={content.credentialUrl}
                 target="_blank"
                 rel="noreferrer"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isModern
-                    ? "bg-white text-neutral-950 hover:bg-neutral-200"
-                    : "bg-neutral-900 text-white hover:bg-neutral-800"
-                }`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 Verify credential
@@ -400,14 +319,10 @@ function CertificateDetail({
                 href={content.imageUrl}
                 target="_blank"
                 rel="noreferrer"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
-                  isModern
-                    ? "border-white/10 hover:bg-white/5"
-                    : "border-neutral-200 hover:bg-neutral-50"
-                }`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-200 text-sm font-medium hover:bg-neutral-50 transition-colors"
               >
                 <FileText className="h-3.5 w-3.5" />
-                View PDF
+                Open PDF
               </a>
             )}
           </div>

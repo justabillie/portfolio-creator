@@ -8,7 +8,6 @@ const updateSchema = z.object({
   role: z.string().max(100).optional().nullable(),
   description: z.string().max(2000).optional().nullable(),
   techStack: z.array(z.string()).optional(),
-  imageUrl: z.string().url().optional().nullable().or(z.literal("")),
   demoUrl: z.string().url().optional().nullable().or(z.literal("")),
   repoUrl: z.string().url().optional().nullable().or(z.literal("")),
 });
@@ -45,7 +44,6 @@ export async function PUT(
         ...(d.role !== undefined && { role: d.role ?? null }),
         ...(d.description !== undefined && { description: d.description ?? null }),
         ...(d.techStack !== undefined && { techStack: d.techStack }),
-        ...(d.imageUrl !== undefined && { imageUrl: d.imageUrl || null }),
         ...(d.demoUrl !== undefined && { demoUrl: d.demoUrl || null }),
         ...(d.repoUrl !== undefined && { repoUrl: d.repoUrl || null }),
       },

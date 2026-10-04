@@ -197,25 +197,13 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                         role: p.role,
                         description: p.description,
                         techStack: p.techStack,
-                        imageUrl: p.imageUrl,
                         demoUrl: p.demoUrl,
                         repoUrl: p.repoUrl,
                       })
                     }
                     className="text-left"
                   >
-                    {p.imageUrl ? (
-                      <div className="aspect-video bg-neutral-900 overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={p.imageUrl}
-                          alt={p.title}
-                          className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-video bg-gradient-to-br from-indigo-500/20 via-fuchsia-500/10 to-transparent" />
-                    )}
+                    <div className="h-1 bg-gradient-to-r from-indigo-500/60 via-fuchsia-500/40 to-transparent" />
                   </button>
                   <div className="p-6 flex-1 flex flex-col">
                     <button
@@ -226,7 +214,6 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                           role: p.role,
                           description: p.description,
                           techStack: p.techStack,
-                          imageUrl: p.imageUrl,
                           demoUrl: p.demoUrl,
                           repoUrl: p.repoUrl,
                         })
@@ -268,7 +255,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                     )}
 
                     {(p.demoUrl || p.repoUrl) && (
-                      <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-white/10 text-sm">
+                      <div className="flex flex-wrap gap-3 mt-auto pt-4 border-t border-white/10 text-sm">
                         {p.demoUrl && (
                           <a
                             href={p.demoUrl}

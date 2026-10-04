@@ -14,6 +14,10 @@ import {
 import { Field, Input, Textarea } from "@/components/form-field";
 import { Btn } from "@/components/button";
 import { PageHeader } from "@/components/page-header";
+import {
+  DashboardDetailModal,
+  type DashboardDetail,
+} from "@/components/dashboard-detail-modal";
 import { springSoft } from "@/lib/motion";
 
 type Experience = {
@@ -49,6 +53,7 @@ export default function ExperiencePage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [detail, setDetail] = useState<DashboardDetail | null>(null);
 
   async function load() {
     setLoading(true);
@@ -58,7 +63,9 @@ export default function ExperiencePage() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   function openCreate() {
     setEditingId(null);
@@ -99,7 +106,10 @@ export default function ExperiencePage() {
     });
     const data = await res.json();
     setSaving(false);
-    if (!res.ok) { toast.error(data.error ?? "Failed to save"); return; }
+    if (!res.ok) {
+      toast.error(data.error ?? "Failed to save");
+      return;
+    }
     toast.success(editingId ? "Experience updated" : "Experience added");
     setModalOpen(false);
     load();
@@ -108,7 +118,10 @@ export default function ExperiencePage() {
   async function remove(id: string, role: string) {
     if (!confirm(`Delete "${role}"?`)) return;
     const res = await fetch(`/api/experiences/${id}`, { method: "DELETE" });
-    if (!res.ok) { toast.error("Failed to delete"); return; }
+    if (!res.ok) {
+      toast.error("Failed to delete");
+      return;
+    }
     setItems((p) => p.filter((x) => x.id !== id));
     toast.success("Experience deleted");
   }
@@ -146,9 +159,26 @@ export default function ExperiencePage() {
                 className="group rounded-2xl border border-neutral-200 bg-white p-5 hover:border-neutral-400 hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-base">{x.role}</h3>
-                    <p className="text-sm text-neutral-700 mt-0.5">{x.company}</p>
+                  <button
+                    onClick={() =>
+                      setDetail({
+                        type: "experience",
+                        role: x.role,
+                        company: x.company,
+                        location: x.location,
+                        description: x.description,
+                        startDate: x.startDate,
+                        endDate: x.endDate,
+                      })
+                    }
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <h3 className="font-semibold text-base group-hover:underline underline-offset-4">
+                      {x.role}
+                    </h3>
+                    <p className="text-sm text-neutral-700 mt-0.5">
+                      {x.company}
+                    </p>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-neutral-500">
                       <span>
                         {formatMonth(x.startDate)} –{" "}
@@ -162,11 +192,11 @@ export default function ExperiencePage() {
                       )}
                     </div>
                     {x.description && (
-                      <p className="text-sm text-neutral-600 mt-3 whitespace-pre-line line-clamp-3">
+                      <p className="text-sm text-neutral-600 mt-3 whitespace-pre-line line-clamp-2">
                         {x.description}
                       </p>
                     )}
-                  </div>
+                  </button>
                   <div className="flex gap-1 shrink-0">
                     <button
                       onClick={() => openEdit(x)}
@@ -193,7 +223,9 @@ export default function ExperiencePage() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit experience" : "New experience"}</DialogTitle>
+            <DialogTitle>
+              {editingId ? "Edit experience" : "New experience"}
+            </DialogTitle>
             <DialogDescription>
               Add a role, company, and what you worked on.
             </DialogDescription>
@@ -256,12 +288,22 @@ export default function ExperiencePage() {
             </Field>
 
             <div className="flex justify-end gap-2 pt-2">
-              <Btn type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Btn>
-              <Btn type="submit" loading={saving}>{editingId ? "Save changes" : "Add experience"}</Btn>
+              <Btn
+                type="button"
+                variant="ghost"
+                onClick={() => setModalOpen(false)}
+              >
+                Cancel
+              </Btn>
+              <Btn type="submit" loading={saving}>
+                {editingId ? "Save changes" : "Add experience"}
+              </Btn>
             </div>
           </form>
         </DialogContent>
       </Dialog>
+
+      <DashboardDetailModal content={detail} onClose={() => setDetail(null)} />
     </div>
   );
 }
@@ -279,7 +321,12 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <p className="text-sm text-neutral-500 mt-1 max-w-xs mx-auto">
         Add internships, jobs, or volunteer work to show your journey.
       </p>
-      <div className="mt-5"><Btn onClick={onAdd}><Plus className="h-4 w-4" />Add experience</Btn></div>
+      <div className="mt-5">
+        <Btn onClick={onAdd}>
+          <Plus className="h-4 w-4" />
+          Add experience
+        </Btn>
+      </div>
     </motion.div>
   );
 }

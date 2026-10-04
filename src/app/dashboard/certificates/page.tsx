@@ -15,6 +15,10 @@ import { Field, Input } from "@/components/form-field";
 import { Btn } from "@/components/button";
 import { PageHeader } from "@/components/page-header";
 import { FileUpload } from "@/components/file-upload";
+import {
+  DashboardDetailModal,
+  type DashboardDetail,
+} from "@/components/dashboard-detail-modal";
 import { springSoft } from "@/lib/motion";
 
 type Cert = {
@@ -48,6 +52,7 @@ export default function CertificatesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [detail, setDetail] = useState<DashboardDetail | null>(null);
 
   async function load() {
     setLoading(true);
@@ -154,41 +159,62 @@ export default function CertificatesPage() {
                   transition={{ ...springSoft, delay: i * 0.03 }}
                   className="group rounded-2xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:shadow-md transition-all"
                 >
-                  {x.imageUrl && !isPdf && (
-                    <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={x.imageUrl}
-                        alt={x.title}
-                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-                  {x.imageUrl && isPdf && (
-                    <div className="aspect-[4/3] bg-neutral-100 border-b border-neutral-100 overflow-hidden relative">
-                      <iframe
-                        src={`${x.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
-                        className="w-full h-full pointer-events-none"
-                        title={x.title}
-                      />
-                      <a
-                        href={x.imageUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="absolute inset-0"
-                        aria-label={`View ${x.title}`}
-                      />
-                    </div>
-                  )}
+                  <button
+                    onClick={() =>
+                      setDetail({
+                        type: "certificate",
+                        title: x.title,
+                        issuer: x.issuer,
+                        issueDate: x.issueDate,
+                        credentialUrl: x.credentialUrl,
+                        imageUrl: x.imageUrl,
+                      })
+                    }
+                    className="text-left w-full"
+                  >
+                    {x.imageUrl && !isPdf && (
+                      <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={x.imageUrl}
+                          alt={x.title}
+                          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+                    {x.imageUrl && isPdf && (
+                      <div className="aspect-[4/3] bg-neutral-100 border-b border-neutral-100 overflow-hidden relative">
+                        <iframe
+                          src={`${x.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`}
+                          className="w-full h-full pointer-events-none"
+                          title={x.title}
+                        />
+                      </div>
+                    )}
+                  </button>
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate">{x.title}</h3>
+                      <button
+                        onClick={() =>
+                          setDetail({
+                            type: "certificate",
+                            title: x.title,
+                            issuer: x.issuer,
+                            issueDate: x.issueDate,
+                            credentialUrl: x.credentialUrl,
+                            imageUrl: x.imageUrl,
+                          })
+                        }
+                        className="flex-1 min-w-0 text-left"
+                      >
+                        <h3 className="font-semibold truncate group-hover:underline underline-offset-4">
+                          {x.title}
+                        </h3>
                         <p className="text-sm text-neutral-600 mt-0.5">
                           {x.issuer}
                           {x.issueDate && ` · ${formatDate(x.issueDate)}`}
                         </p>
-                      </div>
+                      </button>
                       <div className="flex gap-1 shrink-0">
                         <button
                           onClick={() => openEdit(x)}
@@ -274,7 +300,9 @@ export default function CertificatesPage() {
                 <Input
                   type="date"
                   value={form.issueDate}
-                  onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, issueDate: e.target.value })
+                  }
                 />
               </Field>
               <Field label="Credential URL">
@@ -313,6 +341,8 @@ export default function CertificatesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <DashboardDetailModal content={detail} onClose={() => setDetail(null)} />
     </div>
   );
 }

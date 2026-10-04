@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Code2,
   FolderKanban,
-  ImageIcon,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -23,7 +22,10 @@ import {
 import { Field, Input, Textarea } from "@/components/form-field";
 import { Btn } from "@/components/button";
 import { PageHeader } from "@/components/page-header";
-import { FileUpload } from "@/components/file-upload";
+import {
+  DashboardDetailModal,
+  type DashboardDetail,
+} from "@/components/dashboard-detail-modal";
 import { springSoft } from "@/lib/motion";
 
 type Project = {
@@ -32,7 +34,6 @@ type Project = {
   role: string | null;
   description: string | null;
   techStack: string[];
-  imageUrl: string | null;
   demoUrl: string | null;
   repoUrl: string | null;
 };
@@ -42,7 +43,6 @@ const emptyForm = {
   role: "",
   description: "",
   techStackInput: "",
-  imageUrl: "",
   demoUrl: "",
   repoUrl: "",
 };
@@ -54,6 +54,7 @@ export default function ProjectsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [detail, setDetail] = useState<DashboardDetail | null>(null);
 
   async function load() {
     setLoading(true);
@@ -80,11 +81,22 @@ export default function ProjectsPage() {
       role: p.role ?? "",
       description: p.description ?? "",
       techStackInput: p.techStack.join(", "),
-      imageUrl: p.imageUrl ?? "",
       demoUrl: p.demoUrl ?? "",
       repoUrl: p.repoUrl ?? "",
     });
     setModalOpen(true);
+  }
+
+  function openDetail(p: Project) {
+    setDetail({
+      type: "project",
+      title: p.title,
+      role: p.role,
+      description: p.description,
+      techStack: p.techStack,
+      demoUrl: p.demoUrl,
+      repoUrl: p.repoUrl,
+    });
   }
 
   async function submit(e: React.FormEvent) {
@@ -98,7 +110,6 @@ export default function ProjectsPage() {
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
-      imageUrl: form.imageUrl || null,
       demoUrl: form.demoUrl || null,
       repoUrl: form.repoUrl || null,
     };
@@ -161,45 +172,17 @@ export default function ProjectsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ ...springSoft, delay: i * 0.03 }}
-                className="group rounded-xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-400 hover:shadow-sm transition-all flex flex-col"
+                className="group rounded-xl border border-neutral-200 bg-white p-4 hover:border-neutral-400 hover:shadow-sm transition-all flex flex-col"
               >
-                {p.imageUrl ? (
-                  <div className="aspect-[16/9] bg-neutral-100 overflow-hidden shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={p.imageUrl}
-                      alt={p.title}
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                    />
-                  </div>
-                ) : (
-                  <div className="aspect-[16/9] bg-neutral-50 flex items-center justify-center shrink-0 border-b border-neutral-100">
-                    <ImageIcon className="h-6 w-6 text-neutral-300" />
-                  </div>
-                )}
-
-                <div className="p-4 flex-1 flex flex-col">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-sm leading-tight line-clamp-1">
-                      {p.title}
-                    </h3>
-                    <div className="flex gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => openEdit(p)}
-                        className="p-1 rounded text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100"
-                        aria-label="Edit"
-                      >
-                        <Pencil className="h-3 w-3" />
-                      </button>
-                      <button
-                        onClick={() => remove(p.id, p.title)}
-                        className="p-1 rounded text-neutral-400 hover:text-red-600 hover:bg-red-50"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
+                {/* Click body to open detail modal */}
+                <button
+                  type="button"
+                  onClick={() => openDetail(p)}
+                  className="text-left w-full flex-1 flex flex-col"
+                >
+                  <h3 className="font-semibold text-sm leading-tight line-clamp-1 group-hover:underline underline-offset-4">
+                    {p.title}
+                  </h3>
 
                   {p.role && (
                     <div className="flex items-center gap-1 mt-1 text-[11px] text-neutral-500">
@@ -209,14 +192,14 @@ export default function ProjectsPage() {
                   )}
 
                   {p.description && (
-                    <p className="text-xs text-neutral-500 mt-1.5 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-neutral-500 mt-2 line-clamp-3 leading-relaxed">
                       {p.description}
                     </p>
                   )}
 
                   {p.techStack.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2.5">
-                      {p.techStack.slice(0, 3).map((t) => (
+                    <div className="flex flex-wrap gap-1 mt-3">
+                      {p.techStack.slice(0, 4).map((t) => (
                         <span
                           key={t}
                           className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-600"
@@ -224,40 +207,66 @@ export default function ProjectsPage() {
                           {t}
                         </span>
                       ))}
-                      {p.techStack.length > 3 && (
+                      {p.techStack.length > 4 && (
                         <span className="text-[10px] px-1.5 py-0.5 text-neutral-400">
-                          +{p.techStack.length - 3}
+                          +{p.techStack.length - 4}
                         </span>
                       )}
                     </div>
                   )}
+                </button>
 
-                  {(p.demoUrl || p.repoUrl) && (
-                    <div className="flex gap-3 mt-auto pt-3 text-[11px]">
-                      {p.demoUrl && (
-                        <a
-                          href={p.demoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          Live
-                        </a>
-                      )}
-                      {p.repoUrl && (
-                        <a
-                          href={p.repoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900"
-                        >
-                          <Code2 className="h-3 w-3" />
-                          Code
-                        </a>
-                      )}
-                    </div>
-                  )}
+                {/* Bottom row: links + edit/delete */}
+                <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-neutral-100">
+                  <div className="flex gap-3 text-[11px]">
+                    {p.demoUrl && (
+                      <a
+                        href={p.demoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Live
+                      </a>
+                    )}
+                    {p.repoUrl && (
+                      <a
+                        href={p.repoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-900"
+                      >
+                        <Code2 className="h-3 w-3" />
+                        Code
+                      </a>
+                    )}
+                  </div>
+
+                  <div className="flex gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEdit(p);
+                      }}
+                      className="p-1 rounded text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100"
+                      aria-label="Edit"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove(p.id, p.title);
+                      }}
+                      className="p-1 rounded text-neutral-400 hover:text-red-600 hover:bg-red-50"
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -265,6 +274,7 @@ export default function ProjectsPage() {
         </div>
       )}
 
+      {/* Edit/create dialog */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
@@ -300,7 +310,7 @@ export default function ProjectsPage() {
 
             <Field label="Description">
               <Textarea
-                rows={3}
+                rows={4}
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
@@ -321,15 +331,6 @@ export default function ProjectsPage() {
                 placeholder="React, TypeScript, Tailwind"
               />
             </Field>
-
-            <FileUpload
-              label="Cover image"
-              value={form.imageUrl || null}
-              onChange={(url) => setForm({ ...form, imageUrl: url ?? "" })}
-              folder="projects"
-              accept="image/*"
-              aspectClass="aspect-video max-w-[280px]"
-            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Demo URL">
@@ -363,6 +364,9 @@ export default function ProjectsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Read-only detail modal */}
+      <DashboardDetailModal content={detail} onClose={() => setDetail(null)} />
     </div>
   );
 }
@@ -396,13 +400,11 @@ function SkeletonGrid() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="rounded-xl border border-neutral-200 bg-white overflow-hidden"
+          className="rounded-xl border border-neutral-200 bg-white p-4 space-y-2"
         >
-          <div className="aspect-[16/9] bg-neutral-100 animate-pulse" />
-          <div className="p-4 space-y-2">
-            <div className="h-3.5 w-1/2 bg-neutral-100 rounded animate-pulse" />
-            <div className="h-3 w-full bg-neutral-100 rounded animate-pulse" />
-          </div>
+          <div className="h-3.5 w-1/2 bg-neutral-100 rounded animate-pulse" />
+          <div className="h-3 w-full bg-neutral-100 rounded animate-pulse" />
+          <div className="h-3 w-3/4 bg-neutral-100 rounded animate-pulse" />
         </div>
       ))}
     </div>

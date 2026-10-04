@@ -8,7 +8,6 @@ const projectSchema = z.object({
   role: z.string().max(100).optional().nullable(),
   description: z.string().max(2000).optional().nullable(),
   techStack: z.array(z.string()).default([]),
-  imageUrl: z.string().url().optional().nullable().or(z.literal("")),
   demoUrl: z.string().url().optional().nullable().or(z.literal("")),
   repoUrl: z.string().url().optional().nullable().or(z.literal("")),
 });
@@ -46,7 +45,6 @@ export async function POST(request: Request) {
         role: d.role ?? null,
         description: d.description ?? null,
         techStack: d.techStack,
-        imageUrl: d.imageUrl || null,
         demoUrl: d.demoUrl || null,
         repoUrl: d.repoUrl || null,
       },

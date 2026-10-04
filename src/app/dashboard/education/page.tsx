@@ -14,6 +14,10 @@ import {
 import { Field, Input, Textarea } from "@/components/form-field";
 import { Btn } from "@/components/button";
 import { PageHeader } from "@/components/page-header";
+import {
+  DashboardDetailModal,
+  type DashboardDetail,
+} from "@/components/dashboard-detail-modal";
 import { springSoft } from "@/lib/motion";
 
 type Education = {
@@ -38,7 +42,10 @@ const emptyForm = {
 };
 
 function formatMonth(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export default function EducationPage() {
@@ -48,6 +55,7 @@ export default function EducationPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [detail, setDetail] = useState<DashboardDetail | null>(null);
 
   async function load() {
     setLoading(true);
@@ -57,10 +65,14 @@ export default function EducationPage() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   function openCreate() {
-    setEditingId(null); setForm(emptyForm); setModalOpen(true);
+    setEditingId(null);
+    setForm(emptyForm);
+    setModalOpen(true);
   }
 
   function openEdit(x: Education) {
@@ -98,7 +110,10 @@ export default function EducationPage() {
     });
     const data = await res.json();
     setSaving(false);
-    if (!res.ok) { toast.error(data.error ?? "Failed to save"); return; }
+    if (!res.ok) {
+      toast.error(data.error ?? "Failed to save");
+      return;
+    }
     toast.success(editingId ? "Education updated" : "Education added");
     setModalOpen(false);
     load();
@@ -107,7 +122,10 @@ export default function EducationPage() {
   async function remove(id: string, degree: string) {
     if (!confirm(`Delete "${degree}"?`)) return;
     const res = await fetch(`/api/education/${id}`, { method: "DELETE" });
-    if (!res.ok) { toast.error("Failed to delete"); return; }
+    if (!res.ok) {
+      toast.error("Failed to delete");
+      return;
+    }
     setItems((p) => p.filter((x) => x.id !== id));
     toast.success("Education deleted");
   }
@@ -145,11 +163,28 @@ export default function EducationPage() {
                 className="group rounded-2xl border border-neutral-200 bg-white p-5 hover:border-neutral-400 hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold">
-                      {x.degree}{x.field && ` in ${x.field}`}
+                  <button
+                    onClick={() =>
+                      setDetail({
+                        type: "education",
+                        degree: x.degree,
+                        field: x.field,
+                        institution: x.institution,
+                        gpa: x.gpa,
+                        description: x.description,
+                        startDate: x.startDate,
+                        endDate: x.endDate,
+                      })
+                    }
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <h3 className="font-semibold group-hover:underline underline-offset-4">
+                      {x.degree}
+                      {x.field && ` in ${x.field}`}
                     </h3>
-                    <p className="text-sm text-neutral-700 mt-0.5">{x.institution}</p>
+                    <p className="text-sm text-neutral-700 mt-0.5">
+                      {x.institution}
+                    </p>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-neutral-500">
                       <span>
                         {formatMonth(x.startDate)} –{" "}
@@ -158,11 +193,11 @@ export default function EducationPage() {
                       {x.gpa && <span>GPA {x.gpa}</span>}
                     </div>
                     {x.description && (
-                      <p className="text-sm text-neutral-600 mt-3 whitespace-pre-line line-clamp-3">
+                      <p className="text-sm text-neutral-600 mt-3 whitespace-pre-line line-clamp-2">
                         {x.description}
                       </p>
                     )}
-                  </div>
+                  </button>
                   <div className="flex gap-1 shrink-0">
                     <button
                       onClick={() => openEdit(x)}
@@ -189,16 +224,23 @@ export default function EducationPage() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit education" : "New education"}</DialogTitle>
-            <DialogDescription>Where did you study, and what did you learn?</DialogDescription>
+            <DialogTitle>
+              {editingId ? "Edit education" : "New education"}
+            </DialogTitle>
+            <DialogDescription>
+              Where did you study, and what did you learn?
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={submit} className="space-y-4 mt-2">
             <Field label="Institution" required>
               <Input
-                required autoFocus
+                required
+                autoFocus
                 value={form.institution}
-                onChange={(e) => setForm({ ...form, institution: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, institution: e.target.value })
+                }
                 placeholder="University of Yangon"
               />
             </Field>
@@ -224,9 +266,12 @@ export default function EducationPage() {
             <div className="grid grid-cols-3 gap-4">
               <Field label="Start" required>
                 <Input
-                  required type="date"
+                  required
+                  type="date"
                   value={form.startDate}
-                  onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, startDate: e.target.value })
+                  }
                 />
               </Field>
               <Field label="End">
@@ -249,18 +294,30 @@ export default function EducationPage() {
               <Textarea
                 rows={3}
                 value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
                 placeholder="Notable courses, achievements, thesis…"
               />
             </Field>
 
             <div className="flex justify-end gap-2 pt-2">
-              <Btn type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Btn>
-              <Btn type="submit" loading={saving}>{editingId ? "Save changes" : "Add education"}</Btn>
+              <Btn
+                type="button"
+                variant="ghost"
+                onClick={() => setModalOpen(false)}
+              >
+                Cancel
+              </Btn>
+              <Btn type="submit" loading={saving}>
+                {editingId ? "Save changes" : "Add education"}
+              </Btn>
             </div>
           </form>
         </DialogContent>
       </Dialog>
+
+      <DashboardDetailModal content={detail} onClose={() => setDetail(null)} />
     </div>
   );
 }
@@ -278,7 +335,12 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <p className="text-sm text-neutral-500 mt-1 max-w-xs mx-auto">
         Add your degrees or diplomas to show your academic background.
       </p>
-      <div className="mt-5"><Btn onClick={onAdd}><Plus className="h-4 w-4" />Add education</Btn></div>
+      <div className="mt-5">
+        <Btn onClick={onAdd}>
+          <Plus className="h-4 w-4" />
+          Add education
+        </Btn>
+      </div>
     </motion.div>
   );
 }

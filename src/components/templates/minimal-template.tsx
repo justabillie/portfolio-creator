@@ -172,7 +172,6 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                           role: p.role,
                           description: p.description,
                           techStack: p.techStack,
-                          imageUrl: p.imageUrl,
                           demoUrl: p.demoUrl,
                           repoUrl: p.repoUrl,
                         })
@@ -327,7 +326,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                           }
                           className="block w-full text-left"
                         >
-                          <div className="aspect-[4/3] bg-neutral-100 rounded-lg overflow-hidden mb-3 border border-neutral-200 group-hover:border-neutral-400 transition-colors">
+                          <div className="aspect-[4/3] bg-neutral-100 rounded-lg overflow-hidden mb-3 border border-neutral-200">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={c.imageUrl}
