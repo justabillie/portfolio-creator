@@ -198,7 +198,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Live demo section */}
       <section className="bg-neutral-50 border-y border-neutral-200">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
           <div className="text-center mb-14">
@@ -231,9 +230,9 @@ export default function HomePage() {
               </div>
 
               <div className="bg-white p-8">
-                <div className="text-2xl font-bold tracking-tight">Alex Tanaka</div>
+                <div className="text-2xl font-bold tracking-tight">Mia Chen</div>
                 <div className="text-sm text-neutral-500 mt-1">
-                  Full-Stack Developer · React & Node
+                  Frontend Developer · Design Systems & Motion
                 </div>
                 <div className="mt-4 space-y-1.5">
                   <div className="h-2 w-full bg-neutral-100 rounded" />
@@ -278,10 +277,10 @@ export default function HomePage() {
                 <div className="absolute -top-10 right-0 w-32 h-32 rounded-full bg-fuchsia-500/30 blur-3xl" />
                 <div className="relative">
                   <div className="text-2xl font-black tracking-tight bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-transparent">
-                    Alex Tanaka
+                    Mia Chen
                   </div>
                   <div className="text-sm text-neutral-400 mt-1">
-                    Full-Stack Developer · React & Node
+                    Frontend Developer · Design Systems & Motion
                   </div>
                   <div className="flex gap-1.5 mt-4">
                     <div className="h-6 w-20 rounded-full bg-white/10 border border-white/10" />
