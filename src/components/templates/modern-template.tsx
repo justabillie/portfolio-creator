@@ -69,7 +69,10 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                 </div>
               )}
               <div>
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-transparent">
+                <h1
+                  className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-transparent"
+                  style={{ lineHeight: 1.05, paddingBottom: "0.15em" }}
+                >
                   {profile?.fullName ?? data.username}
                 </h1>
                 {profile?.headline && (
